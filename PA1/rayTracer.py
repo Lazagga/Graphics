@@ -72,8 +72,8 @@ def main():
         viewUp = np.array(c.findtext('viewUp').split()).astype(np.float64)
 
         if c.findtext('projDistance'): projDistance = float(c.findtext('projDistance'))
-        viewWidth  = float(c.findtext('viewWidth'))
-        viewHeight = float(c.findtext('viewHeight'))
+        if c.findtext('viewWidth'): viewWidth  = float(c.findtext('viewWidth'))
+        if c.findtext('viewHeight'): viewHeight = float(c.findtext('viewHeight'))
 
         print('viewpoint', viewPoint)
 
@@ -151,7 +151,7 @@ def main():
                     in_shadow = False
                     for s in surfaces:
                         li = s.intersect(hit_point, l)
-                        if li is not None and li < l_dist:
+                        if li is not None and li < l_dist and li > .0001:
                             in_shadow = True
                             break;
                     if in_shadow: continue
@@ -159,11 +159,11 @@ def main():
                     diff = max(.0, np.dot(n, l))
                     pixel_color += hit_sphere.diffuse * intensity * diff
 
-                if hit_sphere.specular is not None:
-                    h = l - ray_dir
-                    h = h / np.linalg.norm(h)
-                    spec = max(.0, np.dot(n, h)) ** hit_sphere.exponent
-                    pixel_color += hit_sphere.specular * intensity * spec
+                    if hit_sphere.specular is not None:
+                        h = l - ray_dir
+                        h = h / np.linalg.norm(h)
+                        spec = max(.0, np.dot(n, h)) ** hit_sphere.exponent
+                        pixel_color += hit_sphere.specular * intensity * spec
 
                 c = Color(*pixel_color)
                 c.gammaCorrect(2.2)
